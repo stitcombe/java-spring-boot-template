@@ -2,11 +2,18 @@ plugins {
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id 'java'
+  id 'jacoco'
 }
 
-group = 'com.replit'
-version = '0.0.1-SNAPSHOT'
+group = project.maven_group
+version = project.app_version
 sourceCompatibility = '17'
+
+configurations {
+  all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+  }
+}
 
 repositories {
 	mavenCentral()
@@ -20,8 +27,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
-	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+  implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+	runtimeOnly 'org.projectlombok:lombok'
+  annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  
 }
 
 dependencyManagement {
@@ -32,4 +42,17 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jacoco {
+  toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    xml.enabled false
+    csv.enabled true
+    html.destination file("${buildDir}/reports/jacoco-html")
+  }
 }
