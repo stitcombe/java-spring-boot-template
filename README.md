@@ -25,3 +25,5 @@ Other commands:
 * `./gradlew test` runs tests
 * `./gradlew clean` clears the build directory
 * `./gradlew build` new build from code
+## Swagger UI
+Navigate to `https://<yourAppUrl>.<username>.repl.co/swagger-ui/index.html#/`
