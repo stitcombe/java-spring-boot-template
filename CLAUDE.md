@@ -50,8 +50,7 @@ The project uses a package-by-feature structure under `src/main/java/com/replit/
 **Spring Boot Starters:**
 - `spring-boot-starter-web`: REST API support with embedded Tomcat
 - `spring-boot-starter-actuator`: Production monitoring and management endpoints
-- `spring-boot-starter-data-jpa`: Database persistence (note: no database is currently configured)
-- `spring-boot-starter-log4j2`: Logging (Spring Boot's default logging is explicitly excluded)
+- `spring-boot-starter-log4j2`: Logging (Spring Boot's default Logback is explicitly excluded)
 
 **Additional Libraries:**
 - `spring-cloud-starter-sleuth`: Distributed tracing with automatic trace/span ID injection
@@ -65,7 +64,7 @@ The project uses a package-by-feature structure under `src/main/java/com/replit/
 - Jacoco for code coverage
 
 ### Logging Configuration
-The project uses Log4j2 instead of Spring Boot's default Logback. Note the explicit exclusion in `build.gradle`:
+The project uses Log4j2 instead of Spring Boot's default Logback. Configuration is in `src/main/resources/log4j2-spring.xml`. Note the explicit exclusion of default logging in `build.gradle`:
 ```groovy
 configurations {
   all {
@@ -75,16 +74,29 @@ configurations {
 ```
 
 ### Database
-The template includes `spring-boot-starter-data-jpa` but no database driver or configuration. When adding database support, you'll need to:
-1. Add a database driver dependency (e.g., PostgreSQL, MySQL, H2)
-2. Configure datasource in `application.properties`
-3. Create entity classes and repositories
+This template does not include database dependencies by default. When adding database support, you'll need to:
+1. Add `spring-boot-starter-data-jpa` to `build.gradle`
+2. Add a database driver dependency (e.g., PostgreSQL, MySQL, H2)
+3. Configure datasource in `application.properties`
+4. Create entity classes and repositories
 
 ## Configuration
 
-All project-level configuration is in `gradle.properties`:
+**Project-level configuration** is in `gradle.properties`:
 - `maven_group`: Package group ID (default: `com.replit`)
 - `app_version`: Application version (default: `0.0.1`)
 - `java_version`: Java version (default: `17`)
 
-Runtime configuration goes in `src/main/resources/application.properties` (currently empty).
+**Runtime configuration** is in `src/main/resources/application.properties` with the following defaults:
+- Application name: `example-service`
+- Server port: `8080`
+- Actuator endpoints: health, info, metrics, prometheus
+- OpenAPI docs: `/api-docs` and `/swagger-ui.html`
+- Jackson configured for ISO date formats and null exclusion
+- Logging levels configured for development
+
+**Environment profiles** are available:
+- `application-dev.properties`: Development profile with verbose logging and detailed error messages
+- `application-prod.properties`: Production profile with minimal logging and no stack traces
+
+To activate a profile, use: `./gradlew bootRun --args='--spring.profiles.active=dev'`
