@@ -39,9 +39,16 @@ This is a Java Spring Boot template configured as a REST API gateway. It uses:
 ## Architecture
 
 ### Package Structure
-The project uses a package-by-feature structure under `src/main/java/com/replit/example/`:
+The project uses a layered architecture under `src/main/java/com/replit/example/`:
 - **ExampleApplication.java**: Main Spring Boot application entry point
 - **Controllers**: REST endpoints (e.g., `HelloController.java`)
+- **config/**: Configuration classes
+  - `WebConfig.java`: CORS and web configuration
+  - `OpenApiConfig.java`: Swagger/OpenAPI documentation configuration
+- **dto/**: Data Transfer Objects
+  - `ErrorResponse.java`: Standardized error response format
+- **exception/**: Exception handling
+  - `GlobalExceptionHandler.java`: Centralized exception handling with @RestControllerAdvice
 
 **Important**: When creating a new project from this template, update the `maven_group` in `gradle.properties` to your organization's group ID (e.g., `com.yourcompany`). This will require refactoring the package structure and moving files accordingly.
 
@@ -50,6 +57,7 @@ The project uses a package-by-feature structure under `src/main/java/com/replit/
 **Spring Boot Starters:**
 - `spring-boot-starter-web`: REST API support with embedded Tomcat
 - `spring-boot-starter-actuator`: Production monitoring and management endpoints
+- `spring-boot-starter-validation`: Bean validation with Hibernate Validator
 - `spring-boot-starter-log4j2`: Logging (Spring Boot's default Logback is explicitly excluded)
 
 **Additional Libraries:**
@@ -79,6 +87,22 @@ This template does not include database dependencies by default. When adding dat
 2. Add a database driver dependency (e.g., PostgreSQL, MySQL, H2)
 3. Configure datasource in `application.properties`
 4. Create entity classes and repositories
+
+### Exception Handling
+Global exception handling is implemented via `GlobalExceptionHandler` using `@RestControllerAdvice`:
+- **Validation errors** (`MethodArgumentNotValidException`): Returns 400 with field-level error details
+- **Illegal arguments** (`IllegalArgumentException`): Returns 400 with error message
+- **Generic exceptions**: Returns 500 with sanitized error message
+- All errors return a standardized `ErrorResponse` format with message, details, and timestamp
+
+### CORS Configuration
+CORS is configured in `WebConfig` with the following defaults:
+- Allowed origins: `http://localhost:3000`, `http://localhost:8080`
+- Allowed methods: GET, POST, PUT, DELETE, OPTIONS, PATCH
+- Credentials support enabled
+- Applies to `/api/**` endpoints
+
+Modify `WebConfig.java` to customize CORS settings for your environment.
 
 ## Configuration
 
