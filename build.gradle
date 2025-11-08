@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.5'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
 	id 'java'
   id 'jacoco'
 }
@@ -20,21 +20,25 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2021.0.4")
+	set('springCloudVersion', "2023.0.3")
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
-  implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
-  implementation 'org.modelmapper:modelmapper:3.1.0'
-  
-	runtimeOnly 'org.projectlombok:lombok'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+  implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+  implementation 'org.modelmapper:modelmapper:3.2.1'
+
+	implementation 'org.projectlombok:lombok'
   annotationProcessor 'org.projectlombok:lombok'
-  
+  annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.projectlombok:lombok'
+  testAnnotationProcessor 'org.projectlombok:lombok'
   
 }
 
@@ -46,17 +50,49 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+  finalizedBy jacocoTestReport
 }
 
 jacoco {
-  toolVersion = "0.8.8"
+  toolVersion = "0.8.11"
 }
 
 jacocoTestReport {
   dependsOn test
   reports {
-    xml.enabled false
+    xml.enabled true
+    xml.destination file("${buildDir}/reports/jacoco/jacoco.xml")
     csv.enabled true
-    html.destination file("${buildDir}/reports/jacoco-html")
+    csv.destination file("${buildDir}/reports/jacoco/jacoco.csv")
+    html.enabled true
+    html.destination file("${buildDir}/reports/jacoco/html")
   }
+}
+
+jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      limit {
+        minimum = 0.70
+      }
+    }
+    rule {
+      enabled = true
+      element = 'CLASS'
+      limit {
+        counter = 'LINE'
+        value = 'COVEREDRATIO'
+        minimum = 0.60
+      }
+      excludes = [
+        '*.config.*',
+        '*.dto.*',
+        '*.ExampleApplication'
+      ]
+    }
+  }
+}
+
+check {
+  dependsOn jacocoTestCoverageVerification
 }

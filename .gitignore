@@ -35,3 +35,18 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+logs/
+*.log
+
+### Environment Variables ###
+.env
+.env.local
+.env.*.local
+
+### Docker ###
+docker-compose.override.yml
+
+### Coverage Reports ###
+jacoco.exec
