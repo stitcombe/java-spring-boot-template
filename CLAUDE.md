@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 This is a Java Spring Boot template configured as a REST API gateway. It uses:
-- **Java 17** (configurable in `gradle.properties`)
-- **Spring Boot 2.7.5** with Spring Cloud 2021.0.4
+- **Java 21 LTS** (configurable in `gradle.properties`)
+- **Spring Boot 3.3.5** with Spring Cloud 2023.0.3
 - **Gradle** for build management
 
 ## Essential Commands
@@ -91,8 +91,8 @@ Test structure under `src/test/java/com/replit/example/`:
 - `spring-boot-starter-log4j2`: Logging (Spring Boot's default Logback is explicitly excluded)
 
 **Additional Libraries:**
-- `spring-cloud-starter-sleuth`: Distributed tracing with automatic trace/span ID injection
-- `springdoc-openapi-ui`: Automatic OpenAPI 3.0 documentation and Swagger UI
+- `micrometer-tracing-bridge-brave`: Distributed tracing with automatic trace/span ID injection (replaces Spring Cloud Sleuth in Spring Boot 3)
+- `springdoc-openapi-starter-webmvc-ui`: Automatic OpenAPI 3.0 documentation and Swagger UI (Spring Boot 3 compatible)
 - `modelmapper`: Object mapping between DTOs and entities
 - `lombok`: Reduces boilerplate (getters, setters, constructors, etc.)
 
@@ -205,7 +205,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) provides automated:
 
 **Build and Test Job:**
 - Runs on every push to main/develop branches and pull requests
-- Sets up Java 17 with Temurin distribution
+- Sets up Java 21 with Temurin distribution
 - Executes full build with tests
 - Generates and verifies code coverage (70% threshold)
 - Uploads coverage reports and test results as artifacts
@@ -227,7 +227,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) provides automated:
 **Project-level configuration** is in `gradle.properties`:
 - `maven_group`: Package group ID (default: `com.replit`)
 - `app_version`: Application version (default: `0.0.1`)
-- `java_version`: Java version (default: `17`)
+- `java_version`: Java version (default: `21`)
 
 **Runtime configuration** is in `src/main/resources/application.properties` with the following defaults:
 - Application name: `example-service`

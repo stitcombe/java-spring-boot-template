@@ -1,6 +1,6 @@
 # Multi-stage build for optimized image size
 # Stage 1: Build the application
-FROM gradle:7.5.1-jdk17-alpine AS builder
+FROM gradle:8.10-jdk21-alpine AS builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ COPY src ./src
 RUN gradle bootJar --no-daemon
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
