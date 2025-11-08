@@ -38,6 +38,24 @@ This is a Java Spring Boot template configured as a REST API gateway. It uses:
 - XML: `build/reports/jacoco/jacoco.xml`
 - CSV: `build/reports/jacoco/jacoco.csv`
 
+### Docker
+
+**Build and run with Docker:**
+```bash
+docker build -t example-service .                    # Build Docker image
+docker run -p 8080:8080 example-service              # Run container
+docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev example-service  # Run with dev profile
+```
+
+**Using Docker Compose:**
+```bash
+docker-compose up                # Start all services
+docker-compose up -d             # Start in detached mode
+docker-compose down              # Stop all services
+docker-compose logs -f app       # View application logs
+docker-compose restart app       # Restart application
+```
+
 ### Accessing the Application
 - **Base URL**: Application runs on port 8080 by default
 - **Swagger UI**: `http://localhost:8080/swagger-ui/index.html#/`
@@ -149,6 +167,60 @@ class HelloControllerTest {
     }
 }
 ```
+
+## DevOps
+
+### Docker
+
+The project includes production-ready Docker support with multi-stage builds:
+
+**Dockerfile Features:**
+- **Multi-stage build** to optimize image size
+- **Non-root user** for security
+- **Health check** configured for container orchestration
+- **Alpine-based** images for minimal footprint
+- Gradle dependency caching for faster builds
+
+**Building and Running:**
+```bash
+docker build -t example-service .
+docker run -p 8080:8080 example-service
+```
+
+**Docker Compose:**
+The `docker-compose.yml` file provides local development setup:
+- Application service with health checks
+- Network configuration
+- Commented PostgreSQL service template for when database is added
+- Environment variable configuration
+
+**Production Considerations:**
+- Uncomment JVM tuning arguments in Dockerfile for production
+- Configure appropriate memory limits based on container resources
+- Use docker-compose.override.yml for local customizations (gitignored)
+
+### CI/CD
+
+GitHub Actions workflow (`.github/workflows/ci.yml`) provides automated:
+
+**Build and Test Job:**
+- Runs on every push to main/develop branches and pull requests
+- Sets up Java 17 with Temurin distribution
+- Executes full build with tests
+- Generates and verifies code coverage (70% threshold)
+- Uploads coverage reports and test results as artifacts
+- Publishes test results to PR
+
+**Docker Build Job:**
+- Builds Docker image after successful tests
+- Uses Docker Buildx for multi-platform support
+- Implements layer caching for faster builds
+- Template included for pushing to Docker Hub (commented out)
+
+**Customization:**
+- Uncomment Docker Hub push steps to enable registry publishing
+- Add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets to repository
+- Modify branches in workflow triggers as needed
 
 ## Configuration
 
