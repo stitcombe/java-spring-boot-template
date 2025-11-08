@@ -28,8 +28,15 @@ This is a Java Spring Boot template configured as a REST API gateway. It uses:
 ./gradlew test                                    # Run all tests
 ./gradlew test --tests ExampleApplicationTests    # Run specific test class
 ./gradlew test --tests "*HelloController*"        # Run tests matching pattern
-./gradlew jacocoTestReport                        # Generate code coverage report (in build/reports/jacoco-html)
+./gradlew jacocoTestReport                        # Generate code coverage report (in build/reports/jacoco/html)
+./gradlew jacocoTestCoverageVerification          # Verify coverage meets thresholds (70% overall, 60% per class)
+./gradlew check                                   # Run tests and coverage verification
 ```
+
+**Coverage Reports:**
+- HTML: `build/reports/jacoco/html/index.html`
+- XML: `build/reports/jacoco/jacoco.xml`
+- CSV: `build/reports/jacoco/jacoco.csv`
 
 ### Accessing the Application
 - **Base URL**: Application runs on port 8080 by default
@@ -49,6 +56,11 @@ The project uses a layered architecture under `src/main/java/com/replit/example/
   - `ErrorResponse.java`: Standardized error response format
 - **exception/**: Exception handling
   - `GlobalExceptionHandler.java`: Centralized exception handling with @RestControllerAdvice
+
+Test structure under `src/test/java/com/replit/example/`:
+- **Unit tests**: Individual class tests (e.g., `GlobalExceptionHandlerTest.java`, `ErrorResponseTest.java`)
+- **integration/**: Integration tests with full Spring context
+- **util/**: Test utilities (e.g., `TestUtils.java` for JSON conversion)
 
 **Important**: When creating a new project from this template, update the `maven_group` in `gradle.properties` to your organization's group ID (e.g., `com.yourcompany`). This will require refactoring the package structure and moving files accordingly.
 
@@ -103,6 +115,40 @@ CORS is configured in `WebConfig` with the following defaults:
 - Applies to `/api/**` endpoints
 
 Modify `WebConfig.java` to customize CORS settings for your environment.
+
+### Testing
+The project includes comprehensive testing infrastructure:
+
+**Test Structure:**
+- **Unit tests**: Test individual classes in isolation (e.g., `GlobalExceptionHandlerTest`, `ErrorResponseTest`)
+- **Integration tests**: Test with full Spring context using `@SpringBootTest` and `MockMvc` (e.g., `HelloControllerTest`, `ActuatorEndpointsTest`)
+- **Test utilities**: Helper classes for common test operations (`TestUtils`)
+
+**Test Coverage:**
+- Jacoco configured with coverage thresholds:
+  - **70% overall** coverage minimum
+  - **60% per-class** coverage minimum
+  - Excludes config classes, DTOs, and main application class
+- Tests automatically run coverage reports via `finalizedBy jacocoTestReport`
+- Coverage reports generated in multiple formats (HTML, XML, CSV)
+
+**Example Test Patterns:**
+```java
+// Controller integration test
+@SpringBootTest
+@AutoConfigureMockMvc
+class HelloControllerTest {
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Test
+    void shouldReturnGreeting() throws Exception {
+        mockMvc.perform(get("/"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Greetings")));
+    }
+}
+```
 
 ## Configuration
 
